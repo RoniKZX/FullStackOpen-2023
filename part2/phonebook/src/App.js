@@ -1,16 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter, PersonForm, People } from './components/Phonebook'
+import axios from 'axios'
 
 function App() {
-  const [people, setPeople] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [people, setPeople] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  // Using axios and effect hooks to request data
+  useEffect(() => {
+    console.log('requesting data...')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('data requested successfully')
+        setPeople(response.data)
+      })
+  }, [])
 
   // Filter by name
   const peopleToShow = people.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
@@ -49,7 +56,7 @@ function App() {
         numberValue={newNumber}
         handleNumberChange={handleNumberChange}
       />
-      
+
       <h2>Numbers</h2>
       <People people={peopleToShow} />
     </div>
