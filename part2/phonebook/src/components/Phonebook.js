@@ -20,8 +20,14 @@ function PersonForm({ onSubmit, nameValue, handleNameChange, numberValue, handle
   )
 }
 
-function People({ people }) {
-  return (<>{people.map(person => <li key={person.id}>{person.name} {person.number}</li>)}</>)
+function Person({ person, removePerson }) {
+  return (
+    <>
+      <li>
+        {person.name} {person.number} <button onClick={removePerson}>delete</button>
+      </li>
+    </>
+  )
 }
 
-export { Filter, PersonForm, People }
+export { Filter, PersonForm, Person }

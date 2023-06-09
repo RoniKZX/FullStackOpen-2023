@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Filter, PersonForm, People } from './components/Phonebook'
-import axios from 'axios'
+import { Filter, PersonForm, Person } from './components/Phonebook'
+import peopleService from './services/people'
 
 function App() {
   const [people, setPeople] = useState([])
@@ -11,31 +11,63 @@ function App() {
   // Using axios and effect hooks to request data
   useEffect(() => {
     console.log('requesting data...')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
+    peopleService
+      .getAll()
+      .then(requestedPeople => {
         console.log('data requested successfully')
-        setPeople(response.data)
+        setPeople(requestedPeople)
       })
+      .catch(error => { console.log('data request failed.') })
   }, [])
 
   // Filter by name
-  const peopleToShow = people.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+  const peopleToShow = people.filter(person => person.name.toLowerCase().includes(filter.toString().toLowerCase()))
 
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = {
       name: newName,
-      number: newNumber,
-      id: people.length + 1
+      number: newNumber
     }
 
-    if (people.find(p => p.name === newPerson.name)) {
-      alert(`${newPerson.name} is already added to the phonebook`)
+    const existingPerson = people.find(p => p.name === newPerson.name)
+
+    if (existingPerson) {
+      if (window.confirm(`${existingPerson.name} is already added to the phonebook, replace the old number with a new one?`)) {
+        peopleService
+          .update(existingPerson.id, newPerson)
+          .then(returnedPerson => {
+            setPeople(people.map(person => person.id === existingPerson.id ? returnedPerson : person))
+          })
+      }
     } else {
-      setPeople(people.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      peopleService
+        .create(newPerson)
+        .then(newlyCreatedPerson => {
+          setPeople(people.concat(newlyCreatedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+    }
+  }
+
+  const removePerson = id => {
+    const personToRemove = people.find(person => person.id === id)
+
+    if (window.confirm(`Delete ${personToRemove.name}`)) {
+      peopleService
+        .remove(personToRemove.id)
+        .then(removedPerson => {
+          setPeople(people.filter(people => people.id !== id))
+        })
+
+        .catch(response => {
+          setPeople(people.filter(people => people.id !== id))
+
+          if (response.response.status === 404) {
+            console.log(`That person didn't exist`)
+          }
+        })
     }
   }
 
@@ -58,7 +90,12 @@ function App() {
       />
 
       <h2>Numbers</h2>
-      <People people={peopleToShow} />
+      <ul>
+        {
+          peopleToShow.map(person =>
+            <Person key={person.id} person={person} removePerson={() => removePerson(person.id)} />)
+        }
+      </ul>
     </div>
   )
 }
