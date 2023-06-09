@@ -16,8 +16,6 @@ function update(id, newObject) {
   return request.then(response => response.data)
 }
 
-export default {
-  getAll: getAll,
-  create: create,
-  update: update
-}
+// Since the object keys and properties have the same
+// name, you can just write them like this:
+export default { getAll, create, update }
