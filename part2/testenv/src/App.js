@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import Note from './components/Note'
-import axios from 'axios'
 import noteService from './services/notes'
 
 function App(props) {
@@ -25,6 +24,10 @@ function App(props) {
       .update(id, changedNote)
       .then(returnedNote => {
         setNotes(notes.map(n => n.id !== id ? n : returnedNote))
+      })
+      .catch(error => {
+        alert(`the note '${note.content}' was already deleted from server`)
+        setNotes(notes.filter(n => n.id !== id))
       })
   }
 

@@ -3,7 +3,13 @@ const baseUrl = 'http://localhost:3001/notes'
 
 function getAll() {
   const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+  const nonExisting = {
+    id: 10000,
+    content: 'This note is not saved to server',
+    important: true,
+  }
+
+  return request.then(response => response.data.concat(nonExisting))
 }
 
 function create(newObject) {
@@ -18,4 +24,5 @@ function update(id, newObject) {
 
 // Since the object keys and properties have the same
 // name, you can just write them like this:
-export default { getAll, create, update }
+const noteService = { getAll, create, update }
+export default noteService
