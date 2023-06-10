@@ -3,6 +3,21 @@ import Note from './components/Note'
 import Notification from './components/Notification'
 import noteService from './services/notes'
 
+function Footer() {
+  const footerStyle = {
+    color: 'green',
+    fontStyle: 'italic',
+    fontSize: 16
+  }
+
+  return (
+      <div style={footerStyle}>
+        <br/>
+        <em>Note app, Department of Computer Science, University of Helsinki 2022</em>
+      </div>
+  )
+}
+
 function App(props) {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
@@ -73,6 +88,7 @@ function App(props) {
           <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)} />
         )}
       </ul>
+      <Footer />
     </>
   );
 }
