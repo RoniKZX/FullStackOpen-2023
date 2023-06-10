@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import Note from './components/Note'
+import Notification from './components/Notification'
 import noteService from './services/notes'
 
 function App(props) {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('some error happened...')
 
   // Requesting data from db
   useEffect(() => {
@@ -26,7 +28,12 @@ function App(props) {
         setNotes(notes.map(n => n.id !== id ? n : returnedNote))
       })
       .catch(error => {
-        alert(`the note '${note.content}' was already deleted from server`)
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
         setNotes(notes.filter(n => n.id !== id))
       })
   }
@@ -55,6 +62,7 @@ function App(props) {
   return (
     <>
       <h1>Notes</h1>
+      <Notification message={errorMessage} />
       <form onSubmit={addNote}>
         <input placeholder="Add a new note" value={newNote} onChange={e => setNewNote(e.target.value)} />
         <button type='submit'>Save</button>
