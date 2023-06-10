@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Filter, PersonForm, Person } from './components/Phonebook'
+import Notification from './components/Notification'
 import peopleService from './services/people'
 
 function App() {
@@ -7,6 +8,8 @@ function App() {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
+  const [code, setCode] = useState(null)
 
   // Using axios and effect hooks to request data
   useEffect(() => {
@@ -38,6 +41,27 @@ function App() {
           .update(existingPerson.id, newPerson)
           .then(returnedPerson => {
             setPeople(people.map(person => person.id === existingPerson.id ? returnedPerson : person))
+            setNewName('')
+            setNewNumber('')
+          })
+          .then(delay => {
+            setMessage(newPerson.name)
+            setCode(2)
+
+            setTimeout(() => {
+              setMessage('')
+              setCode(null)
+            }, 3000)
+          })
+          .catch(error => {
+            setPeople(people.filter(person => person.id !== existingPerson.id))
+            setMessage(newPerson.name)
+            setCode(404)
+  
+            setTimeout(() => {
+              setMessage('')
+              setCode(null)
+            }, 5000);
           })
       }
     } else {
@@ -47,6 +71,15 @@ function App() {
           setPeople(people.concat(newlyCreatedPerson))
           setNewName('')
           setNewNumber('')
+        })
+        .then(delay => {
+          setMessage(newPerson.name)
+          setCode(1)
+
+          setTimeout(() => {
+            setMessage('')
+            setCode(null)
+          }, 3000)
         })
     }
   }
@@ -60,7 +93,15 @@ function App() {
         .then(removedPerson => {
           setPeople(people.filter(people => people.id !== id))
         })
+        .then(notification => {
+          setMessage(personToRemove.name)
+          setCode(3)
 
+          setTimeout(() => {
+            setMessage('')
+            setCode(null)
+          }, 3000)
+        })
         .catch(response => {
           setPeople(people.filter(people => people.id !== id))
 
@@ -77,6 +118,7 @@ function App() {
 
   return (
     <div>
+      <Notification code={code} person={message} />
       <h1>Phonebook</h1>
       <Filter value={filter} onChange={handleFilter} />
 
