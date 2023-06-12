@@ -24,3 +24,6 @@
 
 # vs code
 .vscode
+
+# .env
+**/.env
