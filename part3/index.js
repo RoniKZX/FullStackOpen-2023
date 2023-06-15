@@ -1,8 +1,10 @@
 import express from 'express'
 import morgan from 'morgan'
+import cors from 'cors'
 const app = express()
 
 app.use(express.json()) // Activate the express json-parser
+app.use(cors())
 
 morgan.token('data', (req, res) => JSON.stringify(req.body, undefined, ' '))
 app.use(morgan(`:method :url :status :res[content-length] - :response-time ms
@@ -63,6 +65,13 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+const generateID = () => {
+  const maxId = people.length > 0
+    ? Math.max(...people.map(n => n.id))
+    : 0
+  return maxId + 1
+}
+
 app.post('/api/persons', (req, res) => {
   if (!req.body.name) {
     return res.status(400).json({ error: "name is missing" })
@@ -75,13 +84,13 @@ app.post('/api/persons', (req, res) => {
   }
 
   const newPerson = {
-    id: Math.floor((Math.random() * 10000)),
+    id: generateID(),
     name: req.body.name,
     number: req.body.number,
   }
 
   people = people.concat(newPerson)
-  res.json(people)
+  res.status(201).json(newPerson)
 })
 
 app.use((req, res) => {
