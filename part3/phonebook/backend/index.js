@@ -1,6 +1,8 @@
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
+import People from './models/person.js'
+
 const app = express()
 
 app.use(express.json()) // Activate the express json-parser
@@ -39,16 +41,11 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(people)
+  People.find({}).then(people => res.json(people))
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const person = people.find(p => p.id === Number(req.params.id))
-
-  if (person)
-    res.json(person)
-  else
-    res.status(404).end()
+  People.findById(req.params.id).then(person => res.json(person))
 })
 
 app.get('/info', (req, res) => {
@@ -60,18 +57,9 @@ app.get('/info', (req, res) => {
   res.send(html)
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  people = people.filter(p => p.id !== Number(req.params.id))
-
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  People.findByIdAndRemove(req.params.id).then(result => res.status(204).end()).catch(error => next(error))
 })
-
-const generateID = () => {
-  const maxId = people.length > 0
-    ? Math.max(...people.map(n => n.id))
-    : 0
-  return maxId + 1
-}
 
 app.post('/api/persons', (req, res) => {
   if (!req.body.name) {
@@ -84,14 +72,9 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: "number is missing" })
   }
 
-  const newPerson = {
-    id: generateID(),
-    name: req.body.name,
-    number: req.body.number,
-  }
+  const newPerson = new People({ name: req.body.name, number: req.body.number })
 
-  people = people.concat(newPerson)
-  res.status(201).json(newPerson)
+  newPerson.save().then(savedPerson => res.json(savedPerson))
 })
 
 app.use((req, res) => {
