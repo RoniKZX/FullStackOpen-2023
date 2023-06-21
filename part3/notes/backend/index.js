@@ -1,34 +1,12 @@
 import express from 'express'
 import cors from "cors"
-import mongoose from 'mongoose'
-import 'dotenv/config'
-
-const url = process.env.MONGODB_URI
-
-mongoose.set('strictQuery', false)
-mongoose.connect(url)
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-})
-
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Note = mongoose.model('Note', noteSchema)
+import Note from './models/note.js'
 
 const app = express()
 
 const requestLogger = (request, response, next) => {
-  console.log('Method:', request.method)
-  console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
+  console.log(`${request.method} ${request.path} ${response.statusCode}`)
+  console.log(request.body)
   console.log('---')
   next()
 }
