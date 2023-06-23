@@ -57,7 +57,7 @@ function App() {
             setPeople(people.filter(person => person.id !== existingPerson.id))
             setMessage(newPerson.name)
             setCode(404)
-  
+
             setTimeout(() => {
               setMessage('')
               setCode(null)
@@ -80,6 +80,15 @@ function App() {
             setMessage('')
             setCode(null)
           }, 3000)
+        })
+        .catch(error => {
+          setMessage(error.response.data.error)
+          setCode(4)
+
+          setTimeout(() => {
+            setMessage('')
+            setCode(null)
+          }, 5000);
         })
     }
   }

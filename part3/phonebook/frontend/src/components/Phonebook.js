@@ -14,7 +14,8 @@ function PersonForm({ onSubmit, nameValue, handleNameChange, numberValue, handle
           <label htmlFor="number">number: </label>
           <input type="text" value={numberValue} onChange={handleNumberChange} id="number" name="number" required />
         </div>
-        <button type="submit">add</button>
+        <button type="submit">add</button><br/>
+        <p>Number format: 12-345678... or 123-45678...</p>
       </form>
     </>
   )

@@ -46,6 +46,14 @@ function Notification({ code, person }) {
     )
   }
 
+  if (code === 4) {
+    return (
+      <div style={error}>
+        {person}
+      </div>
+    )
+  }
+
   if (code === 404) {
     return (
       <div style={error}>
