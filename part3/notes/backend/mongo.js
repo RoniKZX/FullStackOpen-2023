@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import 'dotenv/config'
 
 if (process.argv.length < 3) {
   console.log('give password as argument')
@@ -7,8 +8,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2]
 
-const url =
-  `mongodb+srv://ronikzx:${password}@notescluster.bgor83a.mongodb.net/notesApp?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
