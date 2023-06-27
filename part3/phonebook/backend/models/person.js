@@ -4,7 +4,7 @@ import 'dotenv/config'
 const URI = process.env.MONGO_DB_URI
 
 mongoose.connect(URI)
-  .then(result => {
+  .then(() => {
     console.log(`Connecting to ${URI}`)
   })
   .catch(error => {
@@ -23,7 +23,7 @@ const personSchema = new mongoose.Schema({
       validator: (number) => {
         return /^(\d{2}-\d{6,}|\d{3}-\d{5,})$/.test(number)
       },
-      message: props => `Invalid number format:
+      message: () => `Invalid number format:
                             DD-DDDDDD...
                             DDD-DDDDD...`,
       required: [true, 'User phone number required!']

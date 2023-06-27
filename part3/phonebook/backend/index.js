@@ -9,7 +9,7 @@ app.use(express.json()) // Activate the express json-parser
 app.use(cors())
 app.use(express.static('build'))
 
-morgan.token('data', (req, res) => JSON.stringify(req.body, undefined, ' '))
+morgan.token('data', (req) => JSON.stringify(req.body, undefined, ' '))
 app.use(morgan(`:method :url :status :res[content-length] - :response-time ms
 Data: :data \n`))
 
@@ -21,7 +21,7 @@ app.get('/api/persons', (req, res) => {
   People.find({}).then(people => res.json(people))
 })
 
-app.get('/api/persons/:id', (req, res, next) => {
+app.get('/api/persons/:id', (req, res) => {
   People.findById(req.params.id)
     .then(person => {
       if (person) res.json(person)
@@ -47,17 +47,17 @@ app.get('/info', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   People.findByIdAndRemove(req.params.id)
-    .then(result => res.status(204).end())
+    .then(() => res.status(204).end())
     .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res, next) => {
   if (!req.body.name) {
-    return res.status(400).json({ error: "name is missing" })
+    return res.status(400).json({ error: 'name is missing' })
   }
 
   if (!req.body.number) {
-    return res.status(400).json({ error: "number is missing" })
+    return res.status(400).json({ error: 'number is missing' })
   }
 
   const newPerson = new People({ name: req.body.name, number: req.body.number })
@@ -81,7 +81,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 })
 
 const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: "unknown endpoint" })
+  res.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
@@ -90,7 +90,7 @@ const errorHandler = (err, req, res, next) => {
   console.log(err.message)
 
   if (err.name === 'CastError')
-    return response.status(400).send({ error: "malformatted id" })
+    return res.status(400).send({ error: 'malformatted id' })
 
   else if (err.name === 'ValidationError')
     return res.status(400).json({ error: err.message })

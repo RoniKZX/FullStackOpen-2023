@@ -1,5 +1,5 @@
-import mongoose from "mongoose"
-import "dotenv/config"
+import mongoose from 'mongoose'
+import 'dotenv/config'
 
 if (process.argv.length < 3) {
   console.log('give a password as an argument')
@@ -12,7 +12,7 @@ const DB_URI = `mongodb+srv://${DB_USER}:${DB_PASS}@phonebookcluster.nfgjwzn.mon
 
 mongoose.set('strictQuery', false)
 mongoose.connect(DB_URI)
-  .then(res => console.log('Connected successfully to database'))
+  .then(() => console.log('Connected successfully to database'))
   .catch(error => console.log(error.message))
 
 const personSchema = { name: String, number: String }
@@ -26,7 +26,7 @@ if (DB_PASS && process.argv.length < 4) {
         console.log(person.name, person.number)
       })
 
-      mongoose.connection.close().then(res => {
+      mongoose.connection.close().then(() => {
         console.log('Connection closed')
         process.exit(0)
       })
@@ -35,14 +35,12 @@ if (DB_PASS && process.argv.length < 4) {
 else {
   const person = new Person({ name: process.argv[3], number: process.argv[4] })
 
-  person.save().then(res => {
+  person.save().then(() => {
     console.log(`added ${person.name} ${person.number} to phonebook`)
 
-    mongoose.connection.close().then(res => {
+    mongoose.connection.close().then(() => {
       console.log('Connection closed')
       process.exit(0)
     })
   })
 }
-
-
